@@ -7,6 +7,7 @@ import com.tencent.wxcloudrun.dto.CounterRequest;
 import com.tencent.wxcloudrun.model.Counter;
 import com.tencent.wxcloudrun.service.CounterService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -48,21 +49,6 @@ public class CounterController {
     return ApiResponse.ok(count);
   }
 
-  /**
-   * 获取当前计数
-   * @return API response json
-   */
-  @GetMapping(value = "/api/notify")
-  ApiResponse getDemo() {
-    logger.info("/api/count get request");
-    Optional<Counter> counter = counterService.getCounter(1);
-    Integer count = 0;
-    if (counter.isPresent()) {
-      count = counter.get().getCount();
-    }
-
-    return ApiResponse.ok(count);
-  }
 
 
   /**
@@ -75,7 +61,7 @@ public class CounterController {
     logger.info("/api/count post request, action: {}", request.getAction());
 
     Optional<Counter> curCounter = counterService.getCounter(1);
-    if (request.getAction().equals("inc")) {
+    if ("inc".equals(request.getAction())) {
       Integer count = 1;
       if (curCounter.isPresent()) {
         count += curCounter.get().getCount();
@@ -85,7 +71,7 @@ public class CounterController {
       counter.setCount(count);
       counterService.upsertCount(counter);
       return ApiResponse.ok(count);
-    } else if (request.getAction().equals("clear")) {
+    } else if ("clear".equals(request.getAction())) {
       if (!curCounter.isPresent()) {
         return ApiResponse.ok(0);
       }
